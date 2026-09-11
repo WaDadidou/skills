@@ -203,7 +203,27 @@ vers un outil alors que c'est l'utilisateur qui signe. La confiance vient des
 commandes, des shas et des liens déjà dans la review, pas d'une mention.
 
 Sans politique dans le repo, c'est l'appel de l'utilisateur, et sa règle par
-défaut prime.
+défaut prime. Une demande explicite de sa part dans le tour courant prime sur
+toute règle permanente qui dirait l'inverse.
+
+### Éditer une review déjà postée
+
+Le REST `PUT /repos/<owner>/<repo>/pulls/<PR>/reviews/<id>` renvoie **404 quand
+on n'a pas les droits d'écriture sur le repo**, même sur sa propre review, et
+même quand le `GET` sur la même URL passe. Passe par GraphQL :
+
+```bash
+NODE=$(gh api repos/<owner>/<repo>/pulls/<PR>/reviews/<id> --jq '.node_id')
+gh api graphql -f query='
+mutation($id:ID!,$body:String!){
+  updatePullRequestReview(input:{pullRequestReviewId:$id, body:$body}){
+    pullRequestReview { url lastEditedAt }
+  }
+}' -f id="$NODE" -f body="$BODY"
+```
+
+L'édition ne renotifie personne, donc c'est le bon geste pour un ajout après
+coup. Pour un commentaire inline, c'est `updatePullRequestReviewComment`.
 
 ## Contrôle final
 
