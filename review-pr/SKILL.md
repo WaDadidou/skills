@@ -5,9 +5,9 @@ description: Review a GitHub pull request end to end. Rebuilds the PR's history,
 
 # Reviewing a pull request
 
-The point is to **save the recipient time**, not to prove you read the code. A
-useful review states what it verified, asks the two or three questions only the
-maintainer can settle, and stops.
+The point is to **save the reader time**, not to prove you read the code. A
+useful review states what it verified, asks the two or three questions that
+actually need someone's decision, and stops.
 
 A repo may have a skill extending this one with its map and its conventions.
 Read that first if it exists.
@@ -108,10 +108,34 @@ the review leads with. **A check that holds is worth as much as a finding.**
 ### 6. Draft
 
 Shape of a finding: **the problem, its stake, the line it sits on, stop.** No
-sprawling justification, no redesign proposal. The recipient who did not ask
-for it should read it once.
+sprawling justification, no redesign proposal. The reader who did not ask for
+it should read it once.
 
 Write in the language of the repo.
+
+**Decide who each finding is addressed to before you write it.** A review has
+three readers and they are not interchangeable.
+
+| Reader | Gets | Example |
+|---|---|---|
+| **The author** | the default. Everything they can fix themselves | a missing doc line, a bug, a suggestion |
+| **The maintainer** | what the author cannot act on alone, and design calls they cannot settle unilaterally | approving the CI workflows, "should this refuse at boot instead?" |
+| **Later readers** | the verification table, months later, on a public repo | which entry paths you enumerated and what held |
+
+Most findings belong to the author: they wrote the branch, they will fix it.
+Addressing the whole review to the maintainer is the common mistake, and it
+reads as going over the author's head.
+
+- A finding only the maintainer can act on **says so**, by `@`-mention or by
+  naming the move. Do not order the author to do something they cannot.
+- A design call the author cannot settle alone is phrased **as a question**,
+  not as a defect. "Deliberate?" not "this is wrong".
+- Judge scope against what the maintainer asked for, but write the finding to
+  whoever can act on it.
+
+On a repo with one central maintainer, they are a second reader for anything
+touching scope. On a repo with many committers, there may be no single one:
+then the author is the only addressee that exists.
 
 **Four findings maximum.** Past that you are transferring your load onto the
 maintainer instead of lifting it. Cut the nits.
@@ -253,8 +277,10 @@ review **stale, unreadable or expensive**.
    between two options, or a clickable suggestion. A finding with no ask is
    commentary, and it costs a read for nothing.
 
-6. **No instruction the recipient cannot carry out.** Approving the workflows is
-   the maintainer's move, not the author's. State the fact, do not order.
+6. **Every finding reaches someone who can act on it.** Approving the workflows
+   is the maintainer's move, not the author's. State the fact, do not order.
+   Re-read the addressing table in step 6: a review aimed at the wrong reader
+   is work for both of them.
 
 7. **The body / inline split is right.** What cannot be anchored goes in the
    body, the rest goes inline, nothing appears twice.
@@ -284,6 +310,15 @@ review **stale, unreadable or expensive**.
    - GitHub expands a range permalink into a code excerpt inside the comment, so
      a link there is worth a quotation.
    - Leave shas and `#1234` bare: they autolink.
+
+## After posting
+
+Offer the user a briefing on their own review: each finding in plain words, the
+likely pushback and the answer, and an explicit list of what they could not
+verify. They may have to justify the review out loud, to people who know the
+code better than they do, without notes in front of them.
+
+Ask where to write it, and never assume last time's location.
 
 ## What we do not raise
 
