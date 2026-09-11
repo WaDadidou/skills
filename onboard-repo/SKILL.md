@@ -1,41 +1,39 @@
 ---
 name: onboard-repo
-description: Se constituer le contexte d'un repo inconnu. Pose des questions de cadrage, explore, propose un sommaire de documents adapté à CE repo, puis n'écrit que ce qui est retenu. À utiliser quand l'utilisateur débarque sur un projet qu'il ne connaît pas, ou dit "onboard", "état des lieux", "je débarque sur ce repo", "prends connaissance du repo".
+description: Build up context on a repo you do not know. Asks scoping questions, explores, proposes a table of contents fitted to THIS repo, then writes only what is kept. Use when the user lands on a project they do not know, or says "onboard", "survey this repo", "I am new to this repo", "get familiar with the repo".
 ---
 
-# Prendre pied sur un nouveau repo
+# Getting a foothold on a new repo
 
-Suis intégralement `PROMPT.md`, dans ce même dossier. Lis-le maintenant, avant toute action.
+Follow `PROMPT.md` in this same folder, in full. Read it now, before doing anything.
 
 ```
 Read ~/.claude/skills/onboard-repo/PROMPT.md
 ```
 
-Cinq points que la fatigue fait sauter en premier.
+Five points that fatigue drops first.
 
-1. **Tu proposes, tu ne déverses pas.** Il n'y a pas de liste de documents à produire. La
-   phase 3 est le cœur : tu explores, tu soumets un sommaire adapté à ce repo, et **tu
-   n'écris rien avant l'accord**. Trois ou quatre documents suffisent presque toujours. Sur un
-   petit repo, un seul document et une figure sont la bonne réponse.
+1. **You propose, you do not dump.** There is no list of documents to produce. Phase 3 is the
+   heart: you explore, you submit a table of contents fitted to this repo, and **you write
+   nothing before agreement**. Three or four documents are almost always enough. On a small
+   repo, one document and one figure are the right answer.
 
-2. **Vérifie le terrain avant de mesurer.** Clone superficiel, checkout périmé, accès refusé
-   sur la forge : ce sont les seules erreurs qui produisent un document *faux* et non
-   simplement incomplet. Un `git shortlog` sur un clone tronqué invente un contributeur
-   dominant.
+2. **Check the ground before measuring.** Shallow clone, stale checkout, access refused on the
+   forge: those are the only errors that produce a *wrong* document rather than merely an
+   incomplete one. A `git shortlog` on a truncated clone invents a dominant contributor.
 
-3. **La phase 0 est bavarde et bloquante quand tu peux parler.** Quand tu ne peux pas, applique
-   le repli du prompt : continue, consigne les questions, écris le sommaire au lieu de le
-   demander, et ne produis aucune des deux sorties sensibles (profil des personnes qui
-   décident, brique externe dominante).
+3. **Phase 0 is talkative and blocking when you can speak.** When you cannot, apply the
+   prompt's fallback: carry on, record the questions, write the table of contents instead of
+   asking for it, and produce neither of the two sensitive outputs (profile of the people who
+   decide, dominant external brick).
 
-4. **Cherche la politique du projet sur les contributions IA.** Elle varie d'un repo à l'autre
-   dans une même organisation, de « bienvenue » à « fermée sans review ». Tu es probablement un
-   agent.
+4. **Look for the project's policy on AI contributions.** It varies from repo to repo inside a
+   single organisation, from "welcome" to "closed without review". You are probably an agent.
 
-5. **Un constat qui se revérifie mérite un script ; un script qui agit ne s'installe pas tout
-   seul.** Chiffres périssables et contrôles que la CI du projet ne rejoue pas chez moi appellent
-   un exécutable plutôt qu'un paragraphe. Mais tu le **proposes** : n'écris jamais dans une
-   configuration d'outil, un fichier d'automatisme ou un hook du dépôt sans accord explicite.
+5. **A finding that gets re-verified deserves a script; a script that acts does not install
+   itself.** Perishable figures and checks the project's CI does not replay on my machine call
+   for an executable rather than a paragraph. But you **propose** it: never write into a tool
+   configuration, an automation file or a repository hook without explicit agreement.
 
-Ce prompt est aussi conçu pour être copié tel quel dans un autre agent. Si l'utilisateur le
-demande, donne-lui le contenu de `PROMPT.md` sans le paraphraser.
+This prompt is also designed to be pasted as-is into another agent. If the user asks for it,
+give them the contents of `PROMPT.md` without paraphrasing.

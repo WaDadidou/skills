@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Vérifie que chaque ancrage d'un commentaire inline tombe dans un hunk du diff.
+"""Check that every inline comment anchor falls inside a diff hunk.
 
     gh api repos/<owner>/<repo>/pulls/<PR>/files --paginate > files.json
     ./check-anchors.py files.json payload.json
 
-Un commentaire ancré hors diff fait échouer tout l'appel POST /reviews.
+An anchor outside the diff fails the whole POST /reviews call.
 """
 import json
 import re
@@ -12,7 +12,7 @@ import sys
 
 
 def commentable(patch):
-    """Numéros de ligne côté RIGHT réellement présents dans le diff."""
+    """Right-side line numbers actually present in the diff."""
     ok, new = set(), None
     for line in patch.split("\n"):
         m = re.match(r"@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@", line)
@@ -36,13 +36,13 @@ def main(files_path, payload_path):
         path = c["path"]
         start, end = c.get("start_line", c["line"]), c["line"]
         if path not in files:
-            print(f"HORS DIFF     {path}:{start}-{end}  (fichier absent du diff)")
+            print(f"NOT IN DIFF   {path}:{start}-{end}  (file not in the diff)")
             failed = True
             continue
         ok = commentable(files[path])
         miss = [n for n in range(start, end + 1) if n not in ok]
         if miss:
-            print(f"HORS HUNK     {path}:{start}-{end}  lignes: {miss}")
+            print(f"OUTSIDE HUNK  {path}:{start}-{end}  lines: {miss}")
             failed = True
         else:
             print(f"OK            {path}:{start}-{end}")

@@ -1,50 +1,50 @@
 ---
 name: review-pr
-description: Reviewer une pull request GitHub de bout en bout. Reconstitue la chaîne de la PR, vérifie que la CI a réellement tourné, lit le diff et cartographie les appelants, puis poste une review courte avec commentaires inline et suggestions. À utiliser quand l'utilisateur dit "review cette PR", "aide-moi à reviewer", ou donne une URL de pull request.
+description: Review a GitHub pull request end to end. Rebuilds the PR's history, checks whether CI actually ran, reads the diff and maps the callers, then posts a short review with inline comments and suggestions. Use when the user says "review this PR", "help me review", or gives a pull request URL.
 ---
 
-# Reviewer une pull request
+# Reviewing a pull request
 
-Objectif : **faire gagner du temps au destinataire**, pas prouver qu'on a lu.
-Une review utile affirme ce qu'elle a vérifié, pose deux ou trois questions que
-le mainteneur seul peut trancher, et s'arrête.
+The point is to **save the recipient time**, not to prove you read the code. A
+useful review states what it verified, asks the two or three questions only the
+maintainer can settle, and stops.
 
-Un repo peut avoir un skill qui étend celui-ci avec sa carte et ses
-conventions. Lis-le d'abord s'il existe.
+A repo may have a skill extending this one with its map and its conventions.
+Read that first if it exists.
 
-## Trois principes
+## Three principles
 
-Repris des skills publics de davd-gzl (<https://github.com/davd-gzl/skills>, MIT).
+Taken from davd-gzl's public skills (<https://github.com/davd-gzl/skills>, MIT).
 
-1. **Measure, never assume.** Une convention, une capacité, un compte viennent
-   d'une commande lancée dans la session. Jamais de la mémoire, jamais d'un
-   fichier qui l'a noté une fois. Si tu écris "le repo n'a pas de tests front",
-   c'est que tu viens de lancer le `find`.
-2. **Discipline de merge base.** Un problème qui se reproduit aussi sur la base
-   n'est pas un finding de cette PR. Vérifie avant d'accuser le diff.
-3. **Une affirmation porte la commande qui la prouve.** Numéros de ligne
-   compris, relus sur la tête de la PR, pas sur la branche par défaut.
+1. **Measure, never assume.** A convention, a capability and a count come from a
+   command run this session. Never from memory, never from a file that recorded
+   them once. If you write "this repo has no frontend tests", it is because you
+   just ran the `find`.
+2. **Merge-base discipline.** A problem that also fires on the base is not a
+   finding of this PR. Check before you blame the diff.
+3. **A claim carries the command that proves it.** Line numbers included, read
+   off the PR's head, not off the default branch.
 
-## Procédure
+## Procedure
 
-### 1. Reconstituer la chaîne
+### 1. Rebuild the chain
 
-Une PR a souvent des ancêtres : une issue, une PR abandonnée, une PR recadrée.
-**Le scope se juge contre ce que le mainteneur a demandé, pas dans l'absolu.**
+A PR often has ancestors: an issue, an abandoned PR, a PR that was reframed.
+**Scope is judged against what the maintainer asked for, not in the abstract.**
 
 ```bash
 gh pr view <PR> --json number,title,author,state,body,additions,deletions,changedFiles,baseRefName,headRefName
 ```
 
-Suis les `#nnnn` cités dans le corps, et lis l'issue d'origine : elle dit ce que
-l'utilisateur voulait, qui n'est pas toujours ce que la PR livre.
+Follow the `#nnnn` refs in the body, and read the original issue: it says what
+the user wanted, which is not always what the PR delivers.
 
-### 2. Isoler les commentaires humains
+### 2. Isolate the human comments
 
-Les bots de review postent des pavés qui noient tout. Filtre-les.
+Review bots post walls of text that drown everything. Filter them out.
 
 ```bash
-for PR in <numéros>; do
+for PR in <numbers>; do
   for EP in issues/$PR/comments pulls/$PR/comments pulls/$PR/reviews; do
     gh api repos/<owner>/<repo>/$EP --paginate \
       --jq '.[] | select(.user.login|test("bot|qodo|sonar|codecov";"i")|not)
@@ -53,92 +53,88 @@ for PR in <numéros>; do
 done
 ```
 
-Le commentaire du mainteneur sur la PR précédente est souvent la clé du scope.
+The maintainer's comment on the previous PR is often the key to the scope.
 
-### 3. Vérifier que la CI a tourné
+### 3. Check whether CI actually ran
 
-**Réflexe systématique, et souvent le point le plus rentable de la review.**
+**Do this every time. It is often the highest-yield point of the whole review.**
 
 ```bash
 gh run list --branch <headRefName> --limit 10
 ```
 
-`action_required` signifie que **rien n'a été testé** : sur une PR de fork,
-GitHub attend qu'un mainteneur clique "Approve and run workflows". `gh pr checks
-<PR>` peut afficher des checks verts et donner l'illusion inverse, parce que les
-**apps GitHub** (Sonar, Snyk, GitGuardian, Codecov) tournent sans approbation.
-Seuls les workflows du repo comptent.
+`action_required` means **nothing has been tested**: on a fork PR, GitHub waits
+for a maintainer to click "Approve and run workflows". `gh pr checks <PR>` can
+show green checks and suggest the opposite, because **GitHub apps** (Sonar,
+Snyk, GitGuardian, Codecov) run without approval. Only the repo's own workflows
+count.
 
-Quand ils n'ont pas tourné, fais tourner la suite en local. C'est l'information
-manquante la plus utile, et ça transforme un reproche en contribution. Prends
-les commandes du repo, `Makefile`, `package.json` ou le workflow lui-même.
+When they have not run, run the suite locally. It is the most useful missing
+piece of information, and it turns a complaint into a contribution. Take the
+commands from the repo itself: `Makefile`, `package.json`, or the workflow.
 
-**Trois passes avant d'imputer un échec à la PR :**
+**Three passes before pinning a failure on the PR:**
 
-1. La suite complète donne la liste des échecs.
-2. **Rejoue-les en série**, sans parallélisme. Ce qui passe alors est un flake
-   d'ordonnancement, pas un finding. Un worker qui tombe en produit plusieurs
-   d'un coup.
-3. **Rejoue le reste sur la merge base** (`git merge-base <base> <head>`). Ce
-   qui échoue là aussi n'appartient pas à la branche. Recoupe avec
-   `gh run list --branch <base> --limit 3` : si la base est verte en CI mais
-   rouge chez toi, c'est ton environnement local.
+1. The full suite gives you the list of failures.
+2. **Re-run them serially**, no parallelism. Whatever passes then is a
+   scheduling flake, not a finding. A worker that dies produces several at once.
+3. **Re-run the rest on the merge base** (`git merge-base <base> <head>`).
+   Whatever fails there too does not belong to the branch. Cross-check with
+   `gh run list --branch <base> --limit 3`: if the base is green in CI and red
+   on your machine, it is your local environment.
 
-Puis fais tourner spécifiquement les fichiers de tests que la PR touche.
+Then run the test files the PR touches specifically.
 
-Ce run local ne remplace pas la CI, qui fait aussi les lints et les images.
-**N'affirme que ce que tu as lancé.**
+A local run does not replace CI, which also does the lints and the images.
+**Claim only what you ran.**
 
-### 4. Lire le diff en entier, puis cartographier
+### 4. Read the whole diff, then map it
 
 ```bash
 git fetch origin pull/<PR>/head:pr-<PR> && git checkout pr-<PR>
 git diff --stat <base>...pr-<PR>
-git diff <base>...pr-<PR> -- <fichiers source, sans les tests>
+git diff <base>...pr-<PR> -- <source files, tests excluded>
 ```
 
-Puis, pour chaque fonction ou propriété que la PR introduit ou dont elle change
-la sémantique : `grep -rn` sur tous ses appelants, **front compris**. Une PR qui
-change ce que renvoie un champ d'API touche des écrans qu'elle ne modifie pas.
+Then, for every function or property the PR introduces or whose semantics it
+changes, `grep -rn` every caller, **frontend included**. A PR that changes what
+an API field returns touches screens it does not modify.
 
-### 5. Écrire le tableau des vérifications avant la review
+### 5. Write the verification table before the review
 
-Une ligne par chose vérifiée, avec le `fichier:ligne` et le verdict. C'est ce
-que la review affichera en premier. **Une vérification qui tient vaut autant
-qu'un finding.**
+One row per thing checked, with the `file:line` and the verdict. This is what
+the review leads with. **A check that holds is worth as much as a finding.**
 
-### 6. Rédiger
+### 6. Draft
 
-Forme d'un finding : **le problème, son enjeu, la ligne où il vit, stop.** Pas
-de justification étalée, pas de suggestion de redesign. Le destinataire qui n'a
-rien demandé doit le lire une fois.
+Shape of a finding: **the problem, its stake, the line it sits on, stop.** No
+sprawling justification, no redesign proposal. The recipient who did not ask
+for it should read it once.
 
-Écris dans la langue du repo.
+Write in the language of the repo.
 
-**Maximum 4 findings.** Au-delà, tu transfères ta charge au mainteneur au lieu
-de la lui retirer. Coupe les nits.
+**Four findings maximum.** Past that you are transferring your load onto the
+maintainer instead of lifting it. Cut the nits.
 
-Un réflexe qui paie sur un repo multilingue : **rends les chaînes i18n
-interpolées, dans les locales autres que l'anglais.** Une phrase qui se lit en
-anglais peut être cassée ailleurs, quand le libellé injecté est un verbe là où
-l'anglais a un groupe nominal. C'est un apport typique d'un relecteur non
-anglophone.
+A reflex that pays on a multilingual repo: **render the interpolated i18n
+strings, in the locales other than English.** A sentence that reads in English
+can be broken elsewhere, when the injected label is a verb where English has a
+noun phrase. That is a typical contribution from a non-English reviewer.
 
-### 7. Round suivant
+### 7. Next round
 
-Quand l'auteur pousse des correctifs, compare les patch-ids pour distinguer du
-vrai code nouveau d'une branche qui a juste bougé sur sa base. **On ne re-reviewe
-pas du code inchangé.**
+When the author pushes fixes, compare patch-ids to tell genuinely new code from
+a branch that merely moved on its base. **Nobody re-reviews unchanged code.**
 
 ```bash
 git log --format='%H' <base>..pr-<PR> | xargs -n1 git show | git patch-id --stable
 ```
 
-## Poster la review
+## Posting the review
 
-Une review GitHub, c'est **un corps plus un tableau de commentaires inline, en
-un seul appel**. Quatre commentaires postés séparément font quatre
-notifications et arrivent en désordre.
+A GitHub review is **one body plus an array of inline comments, in a single
+call**. Four comments posted separately make four notifications and arrive out
+of order.
 
 ```bash
 gh api repos/<owner>/<repo>/pulls/<PR>/reviews --method POST --input payload.json
@@ -147,70 +143,70 @@ gh api repos/<owner>/<repo>/pulls/<PR>/reviews --method POST --input payload.jso
 ```json
 {
   "event": "COMMENT",
-  "body": "le corps",
+  "body": "the body",
   "comments": [
-    {"path": "chemin/fichier.py", "line": 27, "side": "RIGHT", "body": "..."},
-    {"path": "chemin/autre.py", "start_line": 259, "line": 265,
+    {"path": "path/file.py", "line": 27, "side": "RIGHT", "body": "..."},
+    {"path": "path/other.py", "start_line": 259, "line": 265,
      "start_side": "RIGHT", "side": "RIGHT", "body": "..."}
   ]
 }
 ```
 
-Une suggestion est un bloc ` ```suggestion ` dans le `body` d'un commentaire.
-Elle remplace **exactement** les lignes ancrées, indentation comprise.
+A suggestion is a ` ```suggestion ` block inside a comment's `body`. It replaces
+**exactly** the anchored lines, indentation included.
 
-**Contrainte qui décide de tout : on ne peut ancrer que sur des lignes présentes
-dans le diff.** Le finding le plus actionnable porte souvent sur ce qui manque,
-donc sur un fichier hors diff : il reste au corps. Vérifie avant de poster, un
-seul ancrage invalide fait échouer tout l'appel.
+**The constraint that settles everything: you can only anchor on lines present
+in the diff.** The most actionable finding often bears on what is missing, hence
+on a file outside the diff: it stays in the body. Check before posting, a single
+invalid anchor fails the whole call.
 
 ```bash
 gh api repos/<owner>/<repo>/pulls/<PR>/files --paginate > files.json
 ~/.claude/skills/review-pr/check-anchors.py files.json payload.json
 ```
 
-Autres pièges :
+Other traps:
 
-- `line` est le numéro **côté droit**, après diff, au commit de tête.
-- Multi-lignes : `start_line` **et** `line`, `start_side` **et** `side`.
-- `event` : `COMMENT` pour un avis, `REQUEST_CHANGES` pour bloquer, `APPROVE`
-  pour valider. Une seconde paire d'yeux non mainteneur poste `COMMENT`.
-- **Omettre `event` crée la review en `PENDING`** : relisible dans le
-  navigateur, puis soumise ou jetée. C'est le filet avant l'envoi.
+- `line` is the **right-side** number, after the diff, at the head commit.
+- Multi-line needs `start_line` **and** `line`, `start_side` **and** `side`.
+- `event`: `COMMENT` for an opinion, `REQUEST_CHANGES` to block, `APPROVE` to
+  sign off. A second pair of eyes who is not a maintainer posts `COMMENT`.
+- **Omitting `event` creates the review as `PENDING`**: readable in the browser,
+  then submitted or discarded. That is the safety net before sending.
 
-**Ne poste jamais sans que l'utilisateur l'ait demandé dans le tour courant.**
-Montre le corps et le JSON, attends le mot.
+**Never post unless the user asked for it in the current turn.** Show the body
+and the JSON, wait for the word.
 
-### Divulguer l'assistance IA
+### Disclosing AI assistance
 
-**Cherche la politique du repo avant de poster**, elle existe souvent.
+**Look for the repo's policy before posting**, it often exists.
 
 ```bash
 grep -rn -i 'AI contributions\|AI-assisted\|generated with AI' README.md CONTRIBUTING.md .github/
 ```
 
-Quand le repo demande de la transparence, une ligne suffit, à la fin du corps.
-Elle doit faire trois choses et pas une de plus : **dire que c'est assisté par
-IA, garder la propriété du côté de l'utilisateur, et donner au lecteur de quoi
-vérifier.** C'est ce que la politique cherche, pas un badge.
+When the repo asks for transparency, one line at the end of the body is enough.
+It has to do three things and not one more: **say it was AI-assisted, keep
+ownership with the user, and give the reader something to verify against.** That
+is what the policy is after, not a badge.
 
 > AI-assisted, per the README. I directed it and checked every claim before
 > posting; the permalinks are pinned to `<sha>` so you can verify any of them.
 
-Ce qu'il ne faut **pas** écrire : le nom de l'outil ou du skill. Ça ne dit rien
-au mainteneur sur la manière de lire la review, et ça déplace la responsabilité
-vers un outil alors que c'est l'utilisateur qui signe. La confiance vient des
-commandes, des shas et des liens déjà dans la review, pas d'une mention.
+What **not** to write: the name of the tool or of the skill. It tells the
+maintainer nothing about how to read the review, and it shifts responsibility
+onto a tool when the user is the one signing. Trust comes from the commands,
+the shas and the links already in the review, not from a mention.
 
-Sans politique dans le repo, c'est l'appel de l'utilisateur, et sa règle par
-défaut prime. Une demande explicite de sa part dans le tour courant prime sur
-toute règle permanente qui dirait l'inverse.
+With no policy in the repo, it is the user's call, and their default rule wins.
+An explicit request from them in the current turn outranks any standing rule
+that says otherwise.
 
-### Éditer une review déjà postée
+### Editing a review already posted
 
-Le REST `PUT /repos/<owner>/<repo>/pulls/<PR>/reviews/<id>` renvoie **404 quand
-on n'a pas les droits d'écriture sur le repo**, même sur sa propre review, et
-même quand le `GET` sur la même URL passe. Passe par GraphQL :
+REST `PUT /repos/<owner>/<repo>/pulls/<PR>/reviews/<id>` answers **404 when you
+lack write access on the repo**, even on your own review, and even when `GET` on
+the same URL works. Go through GraphQL:
 
 ```bash
 NODE=$(gh api repos/<owner>/<repo>/pulls/<PR>/reviews/<id> --jq '.node_id')
@@ -222,84 +218,79 @@ mutation($id:ID!,$body:String!){
 }' -f id="$NODE" -f body="$BODY"
 ```
 
-L'édition ne renotifie personne, donc c'est le bon geste pour un ajout après
-coup. Pour un commentaire inline, c'est `updatePullRequestReviewComment`.
+An edit notifies nobody, so it is the right move for an afterthought. For an
+inline comment it is `updatePullRequestReviewComment`.
 
-## Contrôle final
+## Final check
 
-Dernière passe avant de montrer le JSON, sur l'artefact et pas de mémoire. Elle
-ne juge pas le fond, déjà tranché : elle attrape ce qui rend une review
-**périmée, illisible ou coûteuse**.
+Last pass before showing the JSON, over the artifact and not from memory. It
+does not judge the substance, which is already settled: it catches what makes a
+review **stale, unreadable or expensive**.
 
-1. **Fraîcheur.** Le `headRefOid` est-il toujours celui que tu as lu ? La PR
-   est-elle toujours ouverte, non draft, sans nouveau commentaire ni review
-   depuis ta lecture ? Une review d'un arbre que personne ne lira est perdue.
-   Relance juste avant de poster, pas au début.
+1. **Freshness.** Is `headRefOid` still the one you read? Is the PR still open,
+   not draft, with no new comment or review since you read it? A review of a
+   tree nobody will read is wasted. Re-run this right before posting, not at the
+   start.
 
    ```bash
    gh pr view <PR> --json headRefOid,state,isDraft,mergeable,updatedAt
-   gh api 'repos/<owner>/<repo>/issues/<PR>/comments?since=<ta date de lecture>'
+   gh api 'repos/<owner>/<repo>/issues/<PR>/comments?since=<the date you read it>'
    ```
 
-2. **Les ancrages disent ce que le commentaire prétend.** `check-anchors.py`
-   vérifie que la ligne est dans un hunk, pas qu'elle porte le bon code.
-   Imprime les lignes ancrées en face de la première phrase de chaque
-   commentaire, et lis.
+2. **The anchors say what the comment claims.** `check-anchors.py` verifies the
+   line is inside a hunk, not that it carries the right code. Print the anchored
+   lines next to each comment's first sentence, and read.
 
-3. **Aucun déictique ambigu.** À un ancrage, le lecteur voit six lignes, pas le
-   fichier. "le commentaire ci-dessous", "cette ligne", "plus haut" n'ont pas
-   de référent si le bloc ancré contient déjà un commentaire. Nomme la ligne ou
-   le symbole.
+3. **No dangling deixis.** At an anchor the reader sees six lines, not the file.
+   "the comment below", "this line", "above" have no referent when the anchored
+   block already contains a comment. Name the line or the symbol.
 
-4. **Rien qui double un bot ou un fil résolu.** Quand ton finding prolonge le
-   correctif d'un fil déjà résolu, dis-le et nomme le commit, sinon ça se lit
-   comme une relance.
+4. **Nothing that duplicates a bot or a resolved thread.** When your finding
+   follows up on the fix to an already-resolved thread, say so and name the
+   commit, otherwise it reads as reopening it.
 
-5. **Chaque finding nomme la décision qu'il demande.** Une question, un choix
-   entre deux options, ou une suggestion cliquable. Un finding sans demande est
-   du commentaire, et il coûte une lecture pour rien.
+5. **Every finding names the decision it asks for.** A question, a choice
+   between two options, or a clickable suggestion. A finding with no ask is
+   commentary, and it costs a read for nothing.
 
-6. **Aucune consigne que le destinataire ne peut exécuter.** Approuver les
-   workflows est le geste du mainteneur, pas de l'auteur. Énonce le fait,
-   n'ordonne pas.
+6. **No instruction the recipient cannot carry out.** Approving the workflows is
+   the maintainer's move, not the author's. State the fact, do not order.
 
-7. **Le partage corps / inline est bon.** Ce qui n'est pas ancrable va au
-   corps, le reste en inline, rien n'apparaît deux fois.
+7. **The body / inline split is right.** What cannot be anchored goes in the
+   body, the rest goes inline, nothing appears twice.
 
-8. **Chaque nombre et chaque sortie citée vient d'une commande de la session.**
-   Numéros de ligne relus sur la tête de la PR, compteurs de tests pris du run,
-   pas d'un souvenir.
+8. **Every number and every quoted output comes from a command run this
+   session.** Line numbers re-read on the PR's head, test counts taken from the
+   run, not from a memory.
 
-9. **Les références portent un permalien, épinglé sur un sha.**
+9. **References carry a permalink, pinned to a sha.**
 
    ```
-   https://github.com/<owner>/<repo>/blob/<sha>/<chemin>#L<n>
-   https://github.com/<owner>/<repo>/blob/<sha>/<chemin>#L<a>-L<b>
+   https://github.com/<owner>/<repo>/blob/<sha>/<path>#L<n>
+   https://github.com/<owner>/<repo>/blob/<sha>/<path>#L<a>-L<b>
    ```
 
-   - **Épingle sur un sha, jamais sur une branche.** Un lien de branche suit la
-     tête : le numéro de ligne dérive et finit par désigner autre chose. Un
-     permalien sur sha est immuable, il ne peut pas pourrir. S'il devient
-     historique après un force-push, c'est correct : il montre l'arbre que tu
-     as reviewé.
-   - **Le sha de tête pour le code de la branche, le sha de merge base pour ce
-     qui n'est pas dans la PR** (une doc que la PR ne touche pas se cite sur la
-     base, pas sur la branche).
-   - **Le corps a besoin de liens, pas les commentaires inline.** Dans le
-     corps, le lecteur n'est pas dans le fichier, et certaines références n'y
-     sont même pas dans le diff. En inline il a le fichier sous les yeux : ne
-     lie qu'une référence à un **autre** fichier, ou à une ligne hors du hunk
-     affiché.
-   - GitHub déplie un permalien de plage en extrait de code dans le
-     commentaire, donc un lien y vaut une citation.
-   - Laisse nus les shas et les `#1234` : ils sont autoliés.
+   - **Pin to a sha, never to a branch.** A branch link follows the head: the
+     line number drifts and ends up pointing at something else. A sha permalink
+     is immutable, it cannot rot. If it becomes historical after a force-push,
+     that is correct: it shows the tree you reviewed.
+   - **The head sha for the branch's code, the merge-base sha for what is not in
+     the PR** (a doc the PR does not touch is cited on the base, not on the
+     branch).
+   - **The body needs links, the inline comments do not.** In the body the
+     reader is not in the file, and some references are not even in the diff.
+     Inline they have the file in front of them: only link a reference to
+     **another** file, or to a line outside the displayed hunk.
+   - GitHub expands a range permalink into a code excerpt inside the comment, so
+     a link there is worth a quotation.
+   - Leave shas and `#1234` bare: they autolink.
 
-## Ce qu'on ne soulève pas
+## What we do not raise
 
-- **Les perfs**, sauf si la PR touche un chemin chaud ou une requête. Un
-  commentaire perf réflexe se voit.
-- **La sécurité en mode "et si".** Énumère les chemins d'entrée, dis lesquels
-  tiennent. Une liste vérifiée vaut dix questions ouvertes.
-- **Ce que le repo ne fait pas.** Mesure avant de réclamer des tests dans une
-  couche qui n'en a aucun.
-- **Les nits de style** que le linter attrape déjà.
+- **Performance**, unless the PR touches a hot path or a query. A reflex
+  performance comment shows.
+- **Security in "what if" mode.** Enumerate the entry paths, say which ones
+  hold. One verified list beats ten open questions.
+- **What the repo does not do.** Measure before demanding tests in a layer that
+  has none.
+- **Style nits** the linter already catches.

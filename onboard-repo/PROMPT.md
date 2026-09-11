@@ -1,292 +1,284 @@
-# Prendre pied sur un nouveau repo
+# Getting a foothold on a new repo
 
-Tu m'aides à débarquer sur un repo que je ne connais pas. Le but n'est pas de l'auditer, c'est
-de me donner **le contexte que j'aurais mis des jours à assembler**, sous forme de quelques
-documents durables, lisibles par moi comme par un agent à qui je les donnerai plus tard.
+You are helping me land on a repo I do not know. The goal is not to audit it, it is to give me
+**the context I would have taken days to assemble**, as a few durable documents, readable by me
+and by an agent I hand them to later.
 
-**Tu proposes, tu ne déverses pas.** Il n'y a pas de liste de documents à produire. Tu explores,
-puis tu me soumets un sommaire, et tu n'écris que ce que je retiens. Un gabarit qui oblige à
-remplir une case fabrique de l'invention : chaque repo a ses propres choses à dire, et la
-plupart n'en ont que trois ou quatre.
+**You propose, you do not dump.** There is no list of documents to produce. You explore, then
+you submit a table of contents, and you write only what I keep. A template that forces you to
+fill a box manufactures invention: every repo has its own things to say, and most have only
+three or four.
 
-**Pose-moi une question dès que tu as le moindre doute.** C'est la partie du travail que je
-veux la plus bavarde. Je sais ce que je voulais savoir, toi tu ne sais que ce que tu as trouvé.
+**Ask me a question the moment you have the slightest doubt.** This is the part of the work I
+want most talkative. I know what I wanted to learn, you only know what you found.
 
-## Si tu ne peux pas me parler
+## If you cannot talk to me
 
-Sous-agent, tâche de fond, session non interactive : **ne bloque pas, n'invente pas d'accord**.
-Continue avec les réponses par défaut, écris toutes tes questions dans `questions-ouvertes.md`
-avec l'hypothèse retenue et ce qui changerait selon la réponse, **produis le sommaire proposé
-comme un document plutôt que comme une question**, et n'écris que les deux ou trois documents
-dont l'utilité est évidente sans arbitrage. En cas de doute, choisis l'option la plus facile à
-défaire : un document manquant se rattrape, un document faux ou indiscret ne se rattrape pas.
-
----
-
-## Phase 0. Cadrage
-
-Pose ces questions groupées, en une fois, avant toute exploration. Ajoute les tiennes.
-
-**Ma situation**
-1. **Pourquoi ce repo**, dans quel cadre, pour qui, avec quel horizon. Réponds largement :
-   qui sont mes collègues, ce qu'on cherche, ce que je vais faire en premier.
-2. **Dans quelle posture je suis** : shipper vite, faire de la R&D, me rendre visible,
-   reprendre du code existant ? Ça ne demande pas les mêmes documents.
-3. **Quel versant** : backend, frontend, exploitation ?
-4. **Ce que je sais déjà**, et **ce sur quoi tu dois insister**.
-5. **Un point d'entrée** si j'en ai un : une issue, une PR, une fonctionnalité.
-6. **Ce repo seul, ou l'ensemble auquel il appartient ?**
-
-**La production**
-7. **La langue** des documents.
-8. **Où écrire.** Propose un dossier et dis comment tu vérifieras qu'il n'entrera pas dans un
-   commit : écrire hors du dépôt, ou vérifier avec `git status` et `git check-ignore -v`.
-   **Ne propose jamais de l'ajouter à un `.gitignore`, à un gitignore global ou à
-   `.git/info/exclude` sans me le demander** ; sur certaines machines, rester visible dans
-   `git status` est voulu.
-9. **L'audience** : privé, ou partagé ? Ça change ce qu'on peut écrire sur les personnes.
+Subagent, background task, non-interactive session: **do not block, do not invent agreement**.
+Carry on with the default answers, write every question into `open-questions.md` with the
+assumption you took and what would change with the answer, **produce the proposed table of
+contents as a document rather than as a question**, and write only the two or three documents
+whose usefulness is obvious without arbitration. When in doubt, pick the option that is easiest
+to undo: a missing document can be recovered, a wrong or indiscreet one cannot.
 
 ---
 
-## Phase 1. Vérifier le terrain
+## Phase 0. Framing
 
-**En premier, avant toute mesure.** C'est court, et ça évite le seul type d'erreur qui produit
-un document *faux* plutôt qu'incomplet.
+Ask these questions grouped, in one go, before any exploration. Add your own.
 
-- **Le clone est-il complet ?** `git rev-parse --is-shallow-repository`, et compare le nombre
-  de commits à l'âge du projet. Sur un clone tronqué, **toute statistique d'historique est
-  fausse**. Soit tu approfondis, soit tu n'écris aucun chiffre d'historique et tu le dis.
-- **Le checkout est-il à jour ?** `git fetch`, puis `git rev-list --count HEAD..origin/main`.
-  Documente `origin/main`, signale l'écart.
-- **Quels accès sur la forge ?** Teste tôt : PRs, issues, boards, protections de branche.
-  Une absence d'accès n'est pas une absence de donnée, dis laquelle c'est.
-- **Piège d'outil** : `git shortlog` lit l'entrée standard quand ce n'est pas un terminal et
-  renvoie vide sans erreur. Préfère `git log --pretty=%aN | sort | uniq -c | sort -rn`.
-- **Calibre ton effort** sur la taille du dépôt et l'enjeu. Un dépôt de 200 fichiers ne mérite
-  pas la dépense d'un monorepo.
+**My situation**
+1. **Why this repo**, in what setting, for whom, on what horizon. Answer broadly: who my
+   colleagues are, what we are after, what I will do first.
+2. **What stance I am in**: ship fast, do R&D, make myself visible, take over existing code?
+   Those do not call for the same documents.
+3. **Which side**: backend, frontend, operations?
+4. **What I already know**, and **what you should insist on**.
+5. **An entry point** if I have one: an issue, a PR, a feature.
+6. **This repo alone, or the whole it belongs to?**
 
-**S'il y a un point d'entrée, lis-le maintenant.** Une PR réelle donne en deux appels le
-vocabulaire, les couches traversées et le style d'arbitrage. Meilleur rapport signal sur coût
-de toute la phase.
+**The output**
+7. **The language** of the documents.
+8. **Where to write.** Propose a folder and say how you will verify it will not end up in a
+   commit: write outside the repository, or check with `git status` and `git check-ignore -v`.
+   **Never propose adding it to a `.gitignore`, to a global gitignore or to
+   `.git/info/exclude` without asking me**; on some machines, staying visible in `git status`
+   is deliberate.
+9. **The audience**: private, or shared? That changes what can be written about people.
+
+---
+
+## Phase 1. Check the ground
+
+**First, before any measurement.** It is short, and it prevents the one kind of error that
+produces a *wrong* document rather than an incomplete one.
+
+- **Is the clone complete?** `git rev-parse --is-shallow-repository`, and compare the commit
+  count to the project's age. On a truncated clone, **every history statistic is wrong**.
+  Either you deepen it, or you write no history figure and you say so.
+- **Is the checkout current?** `git fetch`, then `git rev-list --count HEAD..origin/main`.
+  Document `origin/main`, flag the gap.
+- **What access do you have on the forge?** Test early: PRs, issues, boards, branch
+  protections. No access is not no data, say which one it is.
+- **Tooling trap**: `git shortlog` reads standard input when it is not a terminal and returns
+  empty with no error. Prefer `git log --pretty=%aN | sort | uniq -c | sort -rn`.
+- **Calibrate your effort** to the size of the repository and the stakes. A 200-file repo does
+  not deserve a monorepo's spend.
+
+**If there is an entry point, read it now.** A real PR gives you the vocabulary, the layers it
+crosses and the style of arbitration in two calls. Best signal-to-cost ratio of the whole phase.
 
 ---
 
 ## Phase 2. Reconnaissance
 
-Tu cartographies. Lis ce qui décrit le projet et ce qui trahit ses habitudes.
+You are mapping. Read what describes the project and what betrays its habits.
 
 - `README`, `CONTRIBUTING`, `SECURITY`, `UPGRADE`, `CHANGELOG`, `LICENSE`, `docs/`
-- **La politique du projet sur les contributions assistées par IA.** Cherche-la explicitement,
-  y compris dans les fichiers d'instructions aux agents (`AGENTS.md`, `CLAUDE.md`,
-  `.cursorrules`, `.github/`). Elle va de « bienvenue, soyez transparent » à « les PRs d'agents
-  autonomes sont fermées sans review », et **elle varie d'un repo à l'autre dans une même
-  organisation**. Tu es probablement un agent : c'est la première chose à vérifier.
-- **Manifestes de dépendances**, un par versant, et il y en a souvent plus d'un :
-  `package.json`, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `Gemfile`,
-  `composer.json`, `pom.xml`, `build.gradle`, `mix.exs`, `pubspec.yaml`. Balayer la liste
-  coûte un `find` et évite de rater un versant entier sur un dépôt polyglotte.
-- Orchestration, CI, `Makefile`, linters, formateurs, `.env.example`
-- **Comment on lance le projet en local**
-- Arborescence des sources. Deux niveaux d'ordinaire, trois quand un service déployable s'y
-  cache.
-- Historique, sous réserve de la phase 1 : style de commit, poids des contributeurs, dossiers
-  qui bougent.
-- **Sur la forge**, souvent l'essentiel de la matière : PRs ouvertes et récemment fermées avec
-  **qui merge effectivement**, issues et usage réel des labels, **état des boards** (un board
-  peut être fermé depuis des mois), checks automatiques et lesquels le `CONTRIBUTING` exige.
-- **L'ensemble plus grand**, s'il y en a un : quelles briques sont partagées avec ce repo.
+- **The project's policy on AI-assisted contributions.** Look for it explicitly, including in
+  agent instruction files (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.github/`). It ranges
+  from "welcome, be transparent" to "autonomous agent PRs are closed without review", and
+  **it varies from repo to repo inside a single organisation**. You are probably an agent:
+  this is the first thing to check.
+- **Dependency manifests**, one per side, and there is often more than one: `package.json`,
+  `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `Gemfile`, `composer.json`,
+  `pom.xml`, `build.gradle`, `mix.exs`, `pubspec.yaml`. Sweeping the list costs one `find` and
+  saves you from missing an entire side on a polyglot repo.
+- Orchestration, CI, `Makefile`, linters, formatters, `.env.example`
+- **How the project is run locally**
+- Source tree. Two levels usually, three when a deployable service hides in there.
+- History, subject to phase 1: commit style, contributor weight, folders that move.
+- **On the forge**, often where most of the material is: open and recently closed PRs with
+  **who actually merges**, issues and the real use of labels, **board state** (a board can have
+  been dead for months), automated checks and which ones `CONTRIBUTING` requires.
+- **The larger whole**, if there is one: which bricks are shared with this repo.
 
-Lis du code seulement pour trancher une question précise, cinq à quinze fichiers : le modèle de
-données, où se décide une autorisation, où se fabrique un jeton ou une session, où arrivent les
-événements extérieurs, quel fichier porte les leviers d'exploitation.
+Read code only to settle a precise question, five to fifteen files: the data model, where an
+authorisation is decided, where a token or a session is minted, where outside events land,
+which file carries the operational levers.
 
 ---
 
-## Phase 3. Proposer un sommaire
+## Phase 3. Propose a table of contents
 
-**Le cœur de ce prompt. Ne produis aucun document avant mon accord.**
+**The heart of this prompt. Produce no document before I agree.**
 
-Présente-moi un tableau court : pour chaque document envisagé, **ce qu'il répondrait**, **ce
-que tu as déjà trouvé qui le justifie**, et si c'est cher à produire. Classe par utilité.
+Show me a short table: for each candidate document, **what it would answer**, **what you
+already found that justifies it**, and whether it is expensive to produce. Sort by usefulness.
 
-Puis **recommande-en trois ou quatre**, et dis lesquels tu écarterais et pourquoi. Sur un petit
-repo, un seul document et une figure peuvent être la bonne réponse ; dis-le si c'est le cas.
-Si l'exploration n'a rien donné pour un sujet, ne le propose pas : ne fabrique pas de matière
-pour remplir une case.
+Then **recommend three or four**, and say which ones you would drop and why. On a small repo,
+one document and one figure can be the right answer; say so if that is the case. If exploration
+turned up nothing on a subject, do not propose it: do not manufacture material to fill a box.
 
-### Le catalogue
+### The catalogue
 
-Ce ne sont pas des cases à cocher, ce sont des candidats, et la liste n'est pas fermée.
-Chacun a son critère de déclenchement. **Si ce repo appelle un document qui n'est pas ici,
-propose-le** : une suite de tests inhabituelle, un modèle de données qui porte tout, un
-protocole métier, une contrainte réglementaire. C'est souvent le meilleur document du lot,
-et c'est aussi ce que tu me diras à la fin pour corriger ce prompt.
+These are not boxes to tick, they are candidates, and the list is not closed. Each has its own
+trigger. **If this repo calls for a document that is not here, propose it**: an unusual test
+suite, a data model that carries everything, a domain protocol, a regulatory constraint. It is
+often the best document of the lot, and it is also what you will tell me at the end so I can
+fix this prompt.
 
-| Document | Répond à | Ne le propose que si |
+| Document | Answers | Only propose it if |
 |---|---|---|
-| **démarrer** | comment lancer le projet et travailler dessus | le lancement n'est pas une commande évidente du README |
-| **glossaire** | les mots du domaine, avec leurs valeurs exactes tirées du code | le domaine a un vocabulaire propre que le code emploie sans le définir |
-| **carte du code** | par où lire, et un tableau « je cherche X, c'est là » | le dépôt est assez gros pour qu'on s'y perde |
-| **pièges** | ce qui va me surprendre et me coûter une demi-journée | l'exploration a produit de vrais écarts entre la règle écrite et la pratique |
-| **conventions** | ce qu'il faut respecter pour qu'une contribution passe | le projet a des conventions explicites et contraignantes en CI |
-| **technos** | à quoi sert chaque brique **dans ce projet** | la pile n'est pas déductible en lisant le manifeste |
-| **schémas** | un mécanisme qu'on ne verrait pas autrement | au moins une affirmation mécanique mérite un dessin |
-| **PRs et issues** | comment une contribution est réellement traitée, et **qui décide** | je vais contribuer, et le repo reçoit des contributions |
-| **point d'entrée** | ce que touche l'issue ou la PR que je t'ai donnée | je t'en ai donné un |
-| **constellation** | ce que ce repo partage avec l'ensemble, et où ça a dérivé | l'ensemble contraint réellement le travail ici |
-| **rafraîchissement** | rejouer les chiffres périssables | **dû d'office** dès qu'un document retenu porte un chiffre daté. Voir « les scripts » ci-dessous |
-| **profil des personnes qui décident** | comment anticiper une review | voir ci-dessous. **Jamais d'office** |
-| **brique externe dominante** | comprendre la dépendance qui porte la valeur | la comprendre change la façon de débugger. **Jamais d'office** |
+| **getting started** | how to run the project and work on it | running it is not an obvious command from the README |
+| **glossary** | the domain's words, with their exact values pulled from the code | the domain has its own vocabulary that the code uses without defining |
+| **code map** | where to start reading, and a "I am looking for X, it is there" table | the repo is big enough to get lost in |
+| **traps** | what will surprise me and cost me half a day | exploration produced real gaps between the written rule and the practice |
+| **conventions** | what to respect for a contribution to go through | the project has explicit conventions enforced in CI |
+| **stack** | what each brick is for **in this project** | the stack is not deducible from reading the manifest |
+| **diagrams** | a mechanism you would not otherwise see | at least one mechanical claim deserves a drawing |
+| **PRs and issues** | how a contribution is actually handled, and **who decides** | I am going to contribute, and the repo receives contributions |
+| **entry point** | what the issue or PR I gave you touches | I gave you one |
+| **constellation** | what this repo shares with the whole, and where it drifted | the whole genuinely constrains the work here |
+| **refresh** | replay the perishable figures | **owed by default** as soon as a kept document carries a dated figure. See "the scripts" below |
+| **profile of the people who decide** | how to anticipate a review | see below. **Never by default** |
+| **dominant external brick** | understand the dependency that carries the value | understanding it changes how you debug. **Never by default** |
 
-### Les scripts qui découlent des constats
+### The scripts that follow from the findings
 
-Tous les constats ne se rangent pas dans un document. Avant d'arrêter le sommaire, trie ce que
-l'exploration a produit :
+Not every finding belongs in a document. Before settling the table of contents, sort what
+exploration produced:
 
-| Un constat qui est… | Sortie |
+| A finding that is... | Output |
 |---|---|
-| un **fait durable** | une ligne dans le document concerné |
-| une **habitude de travail** à adopter | une phrase dans le document concerné, pas un fichier à part |
-| un **chiffre qui vieillit** | un script de mesure, ci-dessous |
-| une **vérification reproductible** que je devrai refaire à la main | un script de pré-vol, ci-dessous |
+| a **durable fact** | one line in the relevant document |
+| a **working habit** to adopt | one sentence in the relevant document, not a separate file |
+| a **figure that ages** | a measurement script, below |
+| a **reproducible check** I will have to redo by hand | a preflight script, below |
 
-Les deux dernières lignes sont le même réflexe : ce qui se revérifie mécaniquement mérite un
-script plutôt qu'un paragraphe qui décrit des commandes à recopier. Les deux premières ne
-méritent **pas** de fichier ; ne fabrique pas un outil là où une phrase suffit.
+The last two rows are the same reflex: what can be re-verified mechanically deserves a script
+rather than a paragraph describing commands to retype. The first two deserve **no** file; do
+not build a tool where a sentence will do.
 
-#### Le script de mesure
+#### The measurement script
 
-Il **découle** des documents retenus. Dès que l'un d'eux porte un chiffre daté, un état de
-forge ou un sha, il est dû.
+It **follows from** the documents you kept. As soon as one of them carries a dated figure, a
+forge state or a sha, it is owed.
 
-Ce qu'il doit faire, et rien de plus.
+What it must do, and nothing more.
 
-- **Il n'écrit rien.** Il affiche l'écart entre le relevé et l'actuel. Un script qui réécrit
-  les documents peut les corrompre en silence ; un diff lu par un humain, non.
-- **La baseline est inscrite dans le script**, en dur, pas relue depuis les documents. C'est ce
-  qui rend l'écart réel même si un document a été édité à la main entretemps.
-- **Il rejoue aussi la phase 1**, pas seulement les chiffres : retard du checkout sur
-  `origin/main`, et tout ce qui rendrait une mesure fausse.
-- **Il dit quoi relire.** Termine par la liste des documents qui vieillissent vite et de ceux
-  qui vieillissent lentement. Un écart sans destination ne sert à rien.
-- **Il échoue proprement.** Client de forge absent, appel refusé, dépôt non cloné : dis-le et
-  sors. Ne jamais afficher un zéro là où la mesure a échoué.
-- **Il dit comment le remettre à zéro.** Un commentaire en tête indiquant quelles variables
-  éditer quand les documents sont réécrits, sinon la baseline se fige pour de bon.
+- **It writes nothing.** It prints the gap between the recorded value and the current one. A
+  script that rewrites the documents can corrupt them silently; a diff read by a human cannot.
+- **The baseline is written into the script**, hardcoded, not read back from the documents.
+  That is what keeps the gap real even if a document was hand-edited in the meantime.
+- **It replays phase 1 too**, not only the figures: how far the checkout lags `origin/main`,
+  and anything that would make a measurement wrong.
+- **It says what to re-read.** End with the list of documents that age fast and those that age
+  slowly. A gap with no destination is useless.
+- **It fails cleanly.** No forge client, call refused, repository not cloned: say so and exit.
+  Never print a zero where the measurement failed.
+- **It says how to reset it.** A comment at the top naming which variables to edit when the
+  documents are rewritten, otherwise the baseline freezes for good.
 
-Groupe les mesures de forge en un seul appel quand l'API le permet, et rappelle en tête du
-script la date de relevé, le sha et la version.
+Group forge measurements into a single call where the API allows, and restate at the top of the
+script the date of record, the sha and the version.
 
-#### Le script de pré-vol
+#### The preflight script
 
-Un cas fréquent et systématiquement manqué : **la CI du projet ne me protège pas**. Elle ne
-tourne pas pour les contributeurs externes, elle exige un format de commit ou une entrée de
-changelog qu'aucun outil local ne vérifie, ou elle vérifie en amont ce que je ne découvrirai
-qu'après avoir ouvert une PR. Chaque fois que l'exploration montre un écart entre **ce que le
-projet exige** et **ce qui est vérifié chez moi avant de pousser**, l'écart se comble par un
-script, pas par un rappel dans un document que je ne relirai pas.
+A frequent and systematically missed case: **the project's CI does not protect me**. It does
+not run for outside contributors, it requires a commit format or a changelog entry that no
+local tool checks, or it verifies upstream what I will only discover after opening a PR. Every
+time exploration shows a gap between **what the project requires** and **what is checked on my
+machine before pushing**, that gap is closed by a script, not by a reminder in a document I
+will not re-read.
 
-- **Il rejoue les contrôles du projet**, pas les tiens. Format de commit, entrée de changelog
-  et sa longueur, cibles de lint et de test du `Makefile` : ce que la CI ferait échouer.
-- **Il ne corrige rien.** Il dit ce qui bloquerait, et laisse la correction à l'humain.
-- **Il dit quel job CI chaque contrôle imite**, pour qu'on sache ce qu'il ne couvre pas.
-- **Nomme ce qu'il ne peut pas rejouer** : un contrôle qui dépend du réseau, d'un secret ou
-  d'un droit d'écriture sur la forge n'est pas reproductible en local. Dis-le plutôt que de le
-  simuler.
+- **It replays the project's checks**, not yours. Commit format, changelog entry and its
+  length, the `Makefile`'s lint and test targets: what CI would fail on.
+- **It fixes nothing.** It says what would block, and leaves the fix to the human.
+- **It says which CI job each check imitates**, so we know what it does not cover.
+- **Name what it cannot replay**: a check depending on the network, on a secret or on write
+  access to the forge is not reproducible locally. Say so rather than simulate it.
 
-**Tu le proposes, tu ne l'installes pas.** Un script de mesure vit dans mes notes et ne fait
-rien ; un pré-vol change ma façon de travailler, et branché en automatisme il change le
-comportement de toutes mes sessions futures. Ce n'est pas la même décision que l'onboarding, et
-je débarque : ton avis a deux heures. Écris le script si je le retiens, propose-moi séparément
-de le brancher, et **n'écris jamais dans une configuration d'outil ou un fichier d'automatisme
-du dépôt sans me le demander**.
+**You propose it, you do not install it.** A measurement script lives in my notes and does
+nothing; a preflight changes the way I work, and wired as an automation it changes the
+behaviour of all my future sessions. That is not the same decision as onboarding, and I am
+landing: your opinion is two hours old. Write the script if I keep it, offer separately to wire
+it up, and **never write into a tool configuration or an automation file of the repository
+without asking me**.
 
-### Les deux sorties sensibles
+### The two sensitive outputs
 
-**Le profil des personnes qui décident** ne se produit que si je le demande explicitement.
-S'il est retenu :
-- **Ne te limite pas aux commentaires de review.** Le pouvoir passe aussi par l'ouverture et la
-  fermeture d'issues, les labels, les gabarits. Quelqu'un qui n'écrit aucune review peut
-  décider beaucoup, et une méthode centrée review le rend invisible.
-- Ce n'est pas toujours une personne ni plusieurs exemplaires du même rôle. Souvent un binôme
-  cloisonné, front et back, ou produit et technique. Un profil par rôle réel.
-- Lance des agents pour collecter le corpus, **tôt**, pendant que tu explores.
-- Contenu : principes de fond avec **citations verbatim et numéro de PR ou d'issue**, checklist
-  implicite avant approbation, ce qui déclenche un refus, vocabulaire de gradation entre
-  remarque bloquante et non bloquante, et « comment m'en servir » séparant ce que je fais avant
-  d'ouvrir une PR de ce que je regarde en review.
-- **Cadre obligatoire** : titre factuel, phrase liminaire disant que le document décrit des
-  mécanismes de décision et non une personne, limites du corpus, et **mention de circulation**
-  interne, ne pas diffuser, ne pas citer dans une PR ou une issue.
+**The profile of the people who decide** is produced only if I ask for it explicitly. If it is
+kept:
+- **Do not limit yourself to review comments.** Power also flows through opening and closing
+  issues, labels, templates. Someone who writes no reviews can decide a great deal, and a
+  review-centred method makes them invisible.
+- It is not always one person, nor several instances of the same role. Often a compartmented
+  pair, frontend and backend, or product and technical. One profile per real role.
+- Launch agents to collect the corpus, **early**, while you explore.
+- Contents: substantive principles with **verbatim quotes and the PR or issue number**, the
+  implicit checklist before approval, what triggers a refusal, the vocabulary grading a
+  blocking remark from a non-blocking one, and a "how to use this" separating what I do before
+  opening a PR from what I look at in review.
+- **Mandatory framing**: factual title, an opening sentence saying the document describes
+  decision mechanisms and not a person, the limits of the corpus, and a **circulation notice**:
+  internal, do not distribute, do not quote in a PR or an issue.
 
-**La constellation**, si elle est retenue : n'inventorie pas l'ensemble exhaustivement, détaille
-ce qui est **partagé ou consommé**. Et **distingue partagé de recopié** : une bibliothèque
-commune contraint, un fichier de configuration copié dérive, et affirmer que l'organisation
-« partage » une convention recopiée serait faux. Compare les contenus avant d'affirmer.
-
----
-
-## Phase 4. Écrire
-
-Un fichier par question retenue, plus un `README.md` d'index court disant où est la racine du
-dépôt et ce que chaque document répond.
-
-- **Toute affirmation vérifiable s'accompagne de la commande qui l'a produite**, dans le
-  document ou dans la procédure de rafraîchissement. Si tu ne peux pas rejouer un chiffre, ne
-  l'écris pas.
-- **Vérifie par un usage réel**, pas par une déclaration : un import, un branchement explicite
-  dans la configuration. **« Déclaré et inutilisé » est une réponse valide et précieuse**, et
-  aucune case ne doit jamais te pousser à combler un vide par du plausible.
-- **Sépare le documenté de l'observé.** « Le README demande X » et « on mesure Y » sont deux
-  registres, et l'écart entre les deux est souvent la chose la plus utile que tu produiras.
-- **Daté et traçable** : date de relevé et commit. C'est la seule redite autorisée, avec les
-  renvois d'un document à l'autre. Partout ailleurs, un contenu vit dans un seul fichier.
-- **N'invente rien.** Signal faible, board vide, accès refusé : écris-le. « Aucune donnée »
-  informe, une extrapolation trompe.
-- **Pas de jugement de valeur** sur les personnes ni sur la qualité du projet. Je débarque, un
-  avis formé en deux heures vieillira mal. Décris les mécanismes.
-- **Pense au lecteur agent** : chemins relatifs à la racine, titres stables, tableaux plutôt
-  que prose quand l'information est tabulaire.
-- **Pas de remplissage.** Un document de quinze lignes qui dit quinze choses vaut mieux qu'une
-  page qui en dit cinq.
-
-## Si des figures sont retenues
-
-Un fichier HTML autonome, thème clair et sombre, SVG écrits à la main, sans bibliothèque ni
-script. Valide que chaque SVG parse avant de livrer.
-
-- **Une figure, une affirmation**, énoncée dans la légende, et fausse si on la nie.
-- **Avant de dessiner, teste l'affirmation.** Si elle décrit **où sont les choses**, écris une
-  liste : un dessin de nomenclature n'apprend rien. Si elle décrit **ce qui circule, ce qui
-  bifurque, ce qui change entre deux options**, dessine.
-- **Aucun nombre minimum.** Une figure est souvent la bonne réponse.
-- **Étiquette les flèches** : `écrit`, `s'abonne`, `interroge toutes les 30 s`.
-- **`currentColor` partout, une seule couleur d'accent**, réservée à ce qui porte le sens et
-  lisible sur les deux fonds. Dimensionne par `viewBox`, aligne sur une grille, textes de 10 à
-  13 px, explications dans la légende. `role="img"` et un `aria-label` portant l'affirmation.
-
-**Archétypes qui marchent** : la frontière des responsabilités, ce que le projet fait lui-même
-contre ce qu'il délègue · le parcours d'un objet central avec ses bifurcations, souvent le
-meilleur rendement · la propagation et la dérive dans un ensemble plus grand, pas un
-organigramme · les contrats sortants que rien ne teste · le modèle de règles quand il est
-difficile et qu'il fait retoquer les contributions.
+**The constellation**, if it is kept: do not inventory the whole exhaustively, detail what is
+**shared or consumed**. And **tell shared from copied**: a common library constrains, a copied
+configuration file drifts, and claiming the organisation "shares" a copied convention would be
+false. Compare the contents before you assert.
 
 ---
 
-## Pour finir
+## Phase 4. Write
 
-Récapitulatif court : ce que tu as produit, les deux ou trois choses les plus utiles apprises,
-ce que tu n'as pas pu vérifier, et ce que je devrais regarder en premier. Redis les questions
-restées ouvertes.
+One file per kept question, plus a short `README.md` index saying where the repository root is
+and what each document answers.
 
-**Puis dis-moi ce que les constats appellent comme outillage**, et arrête-toi là. Une liste
-courte, trois lignes au plus : ce que chaque outil vérifierait ou mesurerait, **quel constat le
-justifie**, où il s'écrirait, et **s'il touche le dépôt ou seulement mes notes**. Un outil qui
-n'écrit que dans mes notes est presque toujours sûr ; un outil qui s'installe dans le dépôt ou
-dans la configuration de mes outils demande une décision séparée, que je prends après
-l'onboarding et pas pendant. Si l'exploration n'a rien produit qui s'outille, dis-le en une
-phrase : c'est une réponse fréquente et parfaitement bonne.
+- **Every verifiable claim comes with the command that produced it**, in the document or in the
+  refresh procedure. If you cannot replay a figure, do not write it.
+- **Verify by real use**, not by a declaration: an import, an explicit wiring in the
+  configuration. **"Declared and unused" is a valid and valuable answer**, and no box should
+  ever push you to fill a gap with something plausible.
+- **Separate the documented from the observed.** "The README asks for X" and "we measure Y" are
+  two registers, and the gap between them is often the most useful thing you will produce.
+- **Dated and traceable**: date of record and commit. That is the only permitted repetition,
+  along with cross-references between documents. Everywhere else, a piece of content lives in
+  one file.
+- **Invent nothing.** Weak signal, empty board, access refused: write it. "No data" informs, an
+  extrapolation misleads.
+- **No value judgement** on people or on the project's quality. I am landing, an opinion formed
+  in two hours will age badly. Describe the mechanisms.
+- **Think of the agent reader**: paths relative to the root, stable headings, tables rather than
+  prose when the information is tabular.
+- **No filler.** A fifteen-line document saying fifteen things beats a page saying five.
 
-**Et dis-moi ce que tu changerais dans ce prompt.** Ce que ce repo appelait et qui n'était pas
-prévu, ce qui t'a fait hésiter, ce que tu as produit sans conviction. Ce prompt se corrige
-repo après repo, c'est le seul moyen qu'il devienne juste.
+## If figures are kept
+
+One self-contained HTML file, light and dark theme, hand-written SVG, no library and no script.
+Validate that every SVG parses before delivering.
+
+- **One figure, one claim**, stated in the caption, and false if you negate it.
+- **Before drawing, test the claim.** If it describes **where things are**, write a list: a
+  nomenclature drawing teaches nothing. If it describes **what flows, what branches, what
+  changes between two options**, draw it.
+- **No minimum count.** One figure is often the right answer.
+- **Label the arrows**: `writes`, `subscribes`, `polls every 30s`.
+- **`currentColor` everywhere, a single accent colour**, reserved for what carries the meaning
+  and legible on both backgrounds. Size by `viewBox`, align to a grid, text from 10 to 13px,
+  explanations in the caption. `role="img"` and an `aria-label` carrying the claim.
+
+**Archetypes that work**: the boundary of responsibilities, what the project does itself versus
+what it delegates · the journey of a central object with its branches, often the best yield ·
+propagation and drift across a larger whole, not an org chart · the outgoing contracts nothing
+tests · the rules model when it is hard and it gets contributions rejected.
+
+---
+
+## To close
+
+Short recap: what you produced, the two or three most useful things learned, what you could not
+verify, and what I should look at first. Restate the questions left open.
+
+**Then tell me what tooling the findings call for**, and stop there. A short list, three lines
+at most: what each tool would check or measure, **which finding justifies it**, where it would
+be written, and **whether it touches the repository or only my notes**. A tool that writes only
+into my notes is almost always safe; a tool that installs itself into the repository or into my
+tool configuration needs a separate decision, which I take after onboarding and not during. If
+exploration produced nothing that warrants tooling, say so in one sentence: it is a frequent
+and perfectly good answer.
+
+**And tell me what you would change in this prompt.** What this repo called for that was not
+foreseen, what made you hesitate, what you produced without conviction. This prompt gets fixed
+repo after repo, that is the only way it becomes right.

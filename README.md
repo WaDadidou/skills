@@ -9,7 +9,8 @@ My [Claude Code](https://claude.com/claude-code) skills. A skill is a folder wit
 `SKILL.md` whose front matter tells Claude when to load it, plus whatever files that
 skill needs.
 
-Written in French, because that is how I work with Claude.
+Written in English, so they travel. My repo-specific and personal skills stay
+on my machine.
 
 ## Skills
 
