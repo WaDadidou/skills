@@ -18,6 +18,7 @@ on my machine.
 | --- | --- |
 | [`onboard-repo`](onboard-repo/) | Build up context on a repo you just landed on. Asks scoping questions, explores, proposes a table of contents fitted to *that* repo, and writes only what you keep. |
 | [`review-pr`](review-pr/) | Review a GitHub pull request end to end. Rebuilds the PR's history, checks whether CI actually ran, reads the diff and maps the callers, then posts a short review with inline comments and suggestions. |
+| [`defend-review`](defend-review/) | Write the briefing for a review you already posted. One plain-language layer per finding, one layer of likely pushback and answers, and an explicit list of what you could not verify. |
 
 ## Install
 
@@ -27,6 +28,7 @@ Clone anywhere, then link the skills you want into `~/.claude/skills/`:
 git clone git@github.com:WaDadidou/skills.git
 ln -s "$PWD/skills/onboard-repo" ~/.claude/skills/onboard-repo
 ln -s "$PWD/skills/review-pr" ~/.claude/skills/review-pr
+ln -s "$PWD/skills/defend-review" ~/.claude/skills/defend-review
 ```
 
 Or make `~/.claude/skills` itself the clone, so editing a skill and committing it are

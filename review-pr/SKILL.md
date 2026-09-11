@@ -313,12 +313,9 @@ review **stale, unreadable or expensive**.
 
 ## After posting
 
-Offer the user a briefing on their own review: each finding in plain words, the
-likely pushback and the answer, and an explicit list of what they could not
-verify. They may have to justify the review out loud, to people who know the
-code better than they do, without notes in front of them.
-
-Ask where to write it, and never assume last time's location.
+Offer the user a briefing on their own review: they may have to justify it out
+loud, to people who know the code better than they do, with no notes in front of
+them. [`defend-review`](../defend-review/) holds its shape.
 
 ## What we do not raise
 
